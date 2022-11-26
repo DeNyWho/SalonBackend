@@ -1,6 +1,5 @@
 package com.example.salonbackend.controller
 
-import com.example.salonbackend.model.requests.EventRequest
 import com.example.salonbackend.model.responses.ServiceResponse
 import com.example.salonbackend.service.event.EventService
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -41,9 +40,8 @@ class EventController {
     @PostMapping("/sub",consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun addSubEvent(
         id: String,
-        title: List<String>,
-        image: List<MultipartFile>,
-        eventRequest: EventRequest,
+        title: String,
+        image: MultipartFile,
         employee: String,
         httpServletResponse: HttpServletResponse
     ): ServiceResponse<Boolean> {

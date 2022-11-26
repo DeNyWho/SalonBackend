@@ -18,6 +18,15 @@ data class Events (
     @Column(name="image", nullable = false)
         val image: String? = null,
 
-    @OneToMany
-      val sub: List<EventSub> = listOf()
-)
+    @OneToMany(
+        fetch = FetchType.EAGER,
+        cascade = [CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH]
+    )
+    @Column(nullable = true)
+        val sub: MutableSet<EventSub> = mutableSetOf()
+) {
+    fun addToSub(eventSub: EventSub): Events {
+        sub.add(eventSub)
+        return this
+    }
+}

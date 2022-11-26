@@ -15,15 +15,22 @@ data class Visits(
     @Id
     val id: String? = UUID.randomUUID().toString(),
 
-    @Column(name="client", nullable = false)
-    val client: String? = null,
-
     @Column(name="employee", nullable = false)
     val employee: String? = null,
 
     @OneToOne(cascade = [CascadeType.ALL])
     val event: EventSub = EventSub(),
 
-    @OneToMany
-    val timings: List<VisitsTiming> = listOf()
-)
+    @OneToMany(
+        fetch = FetchType.EAGER,
+        cascade = [CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH]
+    )
+    @Column(nullable = true)
+    val timings: MutableSet<VisitsTiming> = mutableSetOf()
+) {
+    fun addNewVisits(timingsZxc: VisitsTiming): Visits {
+        timings.add(timingsZxc)
+        return this
+    }
+}
+

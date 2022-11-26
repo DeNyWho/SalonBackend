@@ -1,5 +1,6 @@
 package com.example.salonbackend.controller
 
+import com.example.salonbackend.jpa.visits.Visits
 import com.example.salonbackend.model.responses.ServiceResponse
 import com.example.salonbackend.model.vists.VisitsTiming
 import com.example.salonbackend.service.visits.VisitsService
@@ -20,7 +21,6 @@ class VisitsController {
 
     @PostMapping
     fun createNewVisits(
-        clientID: String,
         employeeID: String,
         eventID: String,
         date: List<VisitsTiming>,
@@ -28,8 +28,26 @@ class VisitsController {
     ): ServiceResponse<Boolean> {
         return try {
             return ServiceResponse(
-                data = listOf(service.addNewVisits(clientID = clientID, employeeID = employeeID, eventID = eventID, date = date)),
-                message = "Event has been created",
+                data = listOf(service.addNewVisits(employeeID = employeeID, eventID = eventID)),
+                message = "Visits has been created",
+                status = HttpStatus.OK
+            )
+        } catch (e: ChangeSetPersister.NotFoundException) {
+            ServiceResponse(status = HttpStatus.NOT_FOUND, message = e.message!!)
+        }
+    }
+
+    @PostMapping("sub")
+    fun addNewSubVisit(
+        id: String,
+        date: String,
+        timings: VisitsTiming,
+        httpServletResponse: HttpServletResponse
+    ): ServiceResponse<Boolean> {
+        return try {
+            return ServiceResponse(
+                data = listOf(service.addNewSubVisits(id, date, timings) ),
+                message = "SubVisit has been created",
                 status = HttpStatus.OK
             )
         } catch (e: ChangeSetPersister.NotFoundException) {
@@ -38,7 +56,16 @@ class VisitsController {
     }
 
     @GetMapping
-    fun getVisits() {
+    fun getVisits(): ServiceResponse<Visits> {
+        return try {
+            return ServiceResponse(
+                data = service.getVisits(),
+                message = "Success",
+                status = HttpStatus.OK
+            )
+        } catch (e: ChangeSetPersister.NotFoundException) {
+            ServiceResponse(status = HttpStatus.NOT_FOUND, message = e.message!!)
+        }
     }
 
 
